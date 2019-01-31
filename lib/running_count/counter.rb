@@ -22,6 +22,8 @@ module RunningCount
         item = Format.item(destination)
 
         Storage.add_item(item, counter_data[:running_set_name], counter_data.fetch(:amount, 1))
+      rescue StandardError => e
+        binding.pry
       end
 
       def reconcile_changes(counter_data)
