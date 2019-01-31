@@ -1,9 +1,17 @@
-RSpec.describe RunningCount do
-  it "has a version number" do
-    expect(RunningCount::VERSION).not_to be nil
+require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+
+require 'models/user'
+require 'models/course'
+
+require 'database_cleaner'
+DatabaseCleaner.strategy = :deletion
+
+describe "CounterCulture" do
+  before(:each) do
+    DatabaseCleaner.clean
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  it "does a thing" do
+    expect(true).to be_truthy
   end
 end
