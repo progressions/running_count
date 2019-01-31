@@ -9,25 +9,11 @@
 # from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
-# It's strongly recommended to check this file into your version control system.
+# It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120522160158) do
+ActiveRecord::Schema.define(version: 0) do
 
-  create_table "users", :force => true do |t|
-    t.string   "name"
-    t.integer  "courses_count",       :default => 0, :null => false
-    t.integer  "transactions_gross",  :default => 0, :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
-  create_table "courses", :force => true do |t|
-    t.string   "name"
-    t.integer  "user_id"
-  end
-
-  create_table "purchases", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "net_charge_usd"
-  end
 end
