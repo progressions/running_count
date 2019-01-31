@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "running_count"
   spec.version       = RunningCount::VERSION
   spec.authors       = ["Isaac Priestley"]
-  spec.email         = ["progressions@gmail.com"]
+  spec.email         = ["isaac@teachable.com"]
 
   spec.summary       = %q{Write a short summary, because RubyGems requires one.}
   spec.description   = %q{Write a longer description or delete this line.}
@@ -17,11 +17,11 @@ Gem::Specification.new do |spec|
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "http://mygemserver.com"
+    spec.metadata["allowed_push_host"] = "http://rubygems.org"
 
     spec.metadata["homepage_uri"] = spec.homepage
-    spec.metadata["source_code_uri"] = "http://github.com/progressions/running_count"
-    spec.metadata["changelog_uri"] = "http://github.com/progressions/running_count"
+    spec.metadata["source_code_uri"] = "http://github.com/usefedora/running_count"
+    spec.metadata["changelog_uri"] = "http://github.com/usefedora/running_count"
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
       "public gem pushes."
