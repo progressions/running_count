@@ -11,7 +11,24 @@ describe "CounterCulture" do
     DatabaseCleaner.clean
   end
 
-  it "does a thing" do
-    expect(true).to be_truthy
+  it "increments counter cache on create" do
+    Course.reconcile_changes
+    user = User.create
+
+    expect(user.courses_count).to eq(0)
+    expect(user.running_courses_count).to eq(0)
+
+    course = Course.create(user_id: user.id)
+
+    expect(user.courses_count).to eq(0)
+    expect(user.running_courses_count).to eq(1)
+
+    Course.reconcile_changes
+
+    user.reload
+
+    expect(user.courses_count).to eq(1)
+    expect(user.running_courses_count).to eq(1)
   end
+
 end

@@ -49,7 +49,7 @@ module RunningCount
         running_set_name = "running_#{counter_column}"
         statement = "update_#{counter_column}"
 
-        destination_class.define_method(running_set_name) do
+        destination_class.redefine_method(running_set_name) do
           self.send(counter_column) + Counter.running_count(self, running_set_name)
         end
 
@@ -63,6 +63,7 @@ module RunningCount
         )
 
         {
+          counter_column: counter_column,
           relation: relation,
           source: opts[:source],
           destination: table_name,

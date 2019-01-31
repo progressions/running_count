@@ -19,10 +19,12 @@ module RunningCount
       end
 
       def prepare_statement(counter_data)
+        return
         ActiveRecord::Base.connection.exec_query(counter_data[:statement_sql])
       end
 
       def release_statement(counter_data)
+        return
         ActiveRecord::Base.connection.exec_query(counter_data[:release_sql])
       end
 
@@ -30,7 +32,16 @@ module RunningCount
         Storage.clear_item(item, counter_data[:running_set_name])
 
         destination_id = Format.parse(item)
-        ActiveRecord::Base.connection.exec_query("EXECUTE #{counter_data[:statement]}(#{destination_id})")
+
+        destination_class = counter_data[:relation].to_s.camelcase.constantize
+        destination = destination_class.find(destination_id)
+
+        destination.update_attributes(
+          counter_data[:counter_column] => destination.send(counter_data[:destination]).size
+        )
+        destination.save!
+
+        # ActiveRecord::Base.connection.exec_query("EXECUTE #{counter_data[:statement]}(#{destination_id})")
       end
 
       private
