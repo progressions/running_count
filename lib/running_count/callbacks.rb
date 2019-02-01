@@ -6,13 +6,7 @@ module RunningCount
     extend ActiveSupport::Concern
 
     def enqueue_changes
-      self.class._counter_data.each do |counter_column, data|
-        if data[:aggregated_field]
-          Counter.enqueue_sum(self, data)
-        else
-          Counter.enqueue_change(self, data)
-        end
-      end
+      Counter.enqueue_changes(self, self.class._counter_data)
     end
 
     module ClassMethods

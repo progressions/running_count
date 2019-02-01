@@ -5,6 +5,16 @@ module RunningCount
 
     class << self
 
+      def enqueue_changes(record, counter_data)
+        counter_data.each do |counter_column, data|
+          if data[:aggregated_field]
+            Counter.enqueue_sum(record, data)
+          else
+            Counter.enqueue_count(record, data)
+          end
+        end
+      end
+
       def enqueue_sum(record, counter_data)
         aggregated_field = counter_data[:aggregated_field]
 
@@ -13,11 +23,11 @@ module RunningCount
         diff = record.previous_changes[aggregated_field].last.to_i - record.previous_changes[aggregated_field].first.to_i
 
         if diff != 0
-          Counter.enqueue_change(record, counter_data.merge(amount: diff))
+          Counter.enqueue_count(record, counter_data.merge(amount: diff))
         end
       end
 
-      def enqueue_change(record, counter_data)
+      def enqueue_count(record, counter_data)
         if changed_field = counter_data[:changed_field]
           return true unless record.previous_changes.has_key?(changed_field) && counter_data[:if].call(record)
         end
