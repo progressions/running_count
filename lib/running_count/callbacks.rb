@@ -16,13 +16,19 @@ module RunningCount
     module ClassMethods
 
       def keep_running_count(relation, opts = {})
-        Counter.add_callbacks(self, opts)
+        data = Counter.counter_data(self.name, self.table_name, relation, opts)
+        counter_column = data[:counter_column]
+        Counter.add_callbacks(self, counter_column, opts)
 
-        @counter_data = Counter.counter_data(self.name, self.table_name, relation, opts)
+
+        @counter_data ||= {}
+        @counter_data[counter_column] = data
       end
 
       def reconcile_changes
-        Counter.reconcile_changes(self._counter_data)
+        self._counter_data.values.each do |data|
+          Counter.reconcile_changes(data)
+        end
       end
 
       def _counter_data

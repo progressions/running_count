@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20190201160158) do
+ActiveRecord::Schema.define(:version => 20190201160159) do
 
   create_table "users", :force => true do |t|
     t.string   "name"
@@ -35,5 +35,18 @@ ActiveRecord::Schema.define(:version => 20190201160158) do
   create_table "articles", :force => true do |t|
     t.integer  "course_id"
     t.boolean  "published"
+  end
+
+  create_table "messages", :force => true do |t|
+    t.string   "body"
+
+    t.integer  "sent_message_count",       :default => 0, :null => false
+    t.integer  "opened_message_count",       :default => 0, :null => false
+  end
+
+  create_table "receipts", :force => true do |t|
+    t.integer  "message_id"
+    t.string   "sent_at"
+    t.string   "opened_at"
   end
 end

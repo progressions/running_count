@@ -4,6 +4,8 @@ require 'models/user'
 require 'models/course'
 require 'models/purchase'
 require 'models/article'
+require 'models/message'
+require 'models/receipt'
 
 require 'database_cleaner'
 DatabaseCleaner.strategy = :deletion
@@ -87,4 +89,28 @@ describe "CounterCulture" do
     expect(course.running_published_article_count).to eq(1)
   end
 
+  it "counts receipts" do
+    Receipt.reconcile_changes
+
+    message = Message.create
+
+    expect(message.sent_message_count).to eq(0)
+    expect(message.running_sent_message_count).to eq(0)
+    expect(message.running_opened_message_count).to eq(0)
+
+    Receipt.create(message_id: message.id, sent_at: Time.now)
+    Receipt.create(message_id: message.id, sent_at: Time.now, opened_at: Time.now)
+
+    expect(message.sent_message_count).to eq(0)
+    expect(message.running_sent_message_count).to eq(2)
+    expect(message.running_opened_message_count).to eq(0)
+
+    Receipt.reconcile_changes
+
+    message.reload
+
+    expect(message.sent_message_count).to eq(2)
+    expect(message.running_sent_message_count).to eq(2)
+    expect(message.running_opened_message_count).to eq(0)
+  end
 end
