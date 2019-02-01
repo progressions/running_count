@@ -32,6 +32,7 @@ module RunningCount
         destination_id = Format.parse(item)
         ActiveRecord::Base.connection.exec_query("EXECUTE #{counter_data[:statement]}(#{destination_id})")
       rescue StandardError => e
+        pp counter_data
       end
 
       private
@@ -56,7 +57,7 @@ module RunningCount
 
       def sum_inner_sql(table_name, relation, opts)
         %(
-          SELECT SUM(#{opts[:aggregated_field]}) FROM "#{table_name}"
+          SELECT COALESCE(SUM(#{opts[:aggregated_field]}), 0) FROM "#{table_name}"
           WHERE "#{table_name}"."#{relation}_id" = $1
           #{extra_sql(opts)}
         )

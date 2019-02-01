@@ -22,8 +22,19 @@ module RunningCount
         item = Format.item(destination)
 
         Storage.add_item(item, counter_data[:running_set_name], counter_data.fetch(:amount, 1))
-      rescue StandardError => e
-        binding.pry
+      end
+
+      def enqueue_deletion(record, counter_data)
+        destination = record.send(counter_data[:relation])
+        item = Format.item(destination)
+
+        amount = if counter_data[:aggregated_field]
+                   record.send(counter_data[:aggregated_field])
+                 else
+                   counter_data.fetch(:amount, 1)
+                 end
+
+        Storage.add_item(item, counter_data[:running_set_name], 0 - amount)
       end
 
       def reconcile_changes(counter_data)
@@ -84,6 +95,7 @@ module RunningCount
         else
           klass.after_commit :enqueue_count, on: [:create, :update], if: opts[:if]
         end
+        klass.after_commit :enqueue_deletion, on: [:destroy], if: opts[:if]
       end
 
       private

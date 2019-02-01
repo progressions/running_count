@@ -4,8 +4,6 @@ require 'models/user'
 require 'models/course'
 require 'models/purchase'
 require 'models/article'
-require 'models/message'
-require 'models/receipt'
 
 require 'database_cleaner'
 DatabaseCleaner.strategy = :deletion
@@ -65,8 +63,37 @@ describe RunningCount do
 
     Course.reconcile_changes
 
+    user.reload
+
     expect(user.courses_count).to eq(0)
     expect(user.running_courses_count).to eq(0)
+  end
+
+  it "updates aggregated field on deletion" do
+    Purchase.reconcile_changes
+
+    user = User.create
+    purchase = Purchase.create(user_id: user.id, net_charge_usd: 100)
+
+    Purchase.reconcile_changes
+
+    user.reload
+
+    expect(user.transactions_gross).to eq(100)
+    expect(user.running_transactions_gross).to eq(100)
+
+    purchase.destroy
+    user.reload
+
+    expect(user.transactions_gross).to eq(100)
+    expect(user.running_transactions_gross).to eq(0)
+
+    Purchase.reconcile_changes
+
+    user.reload
+
+    expect(user.transactions_gross).to eq(0)
+    expect(user.running_transactions_gross).to eq(0)
   end
 
   it "aggregates field" do
@@ -112,36 +139,5 @@ describe RunningCount do
 
     expect(course.published_article_count).to eq(1)
     expect(course.running_published_article_count).to eq(1)
-  end
-
-  it "counts receipts to multiple columns" do
-    Receipt.reconcile_changes
-
-    message = Message.create
-
-    expect(message.sent_message_count).to eq(0)
-    expect(message.running_sent_message_count).to eq(0)
-
-    expect(message.opened_message_count).to eq(0)
-    expect(message.running_opened_message_count).to eq(0)
-
-    Receipt.create(message_id: message.id, sent_at: Time.now)
-    Receipt.create(message_id: message.id, sent_at: Time.now, opened_at: Time.now)
-
-    expect(message.sent_message_count).to eq(0)
-    expect(message.running_sent_message_count).to eq(2)
-
-    expect(message.opened_message_count).to eq(0)
-    expect(message.running_opened_message_count).to eq(1)
-
-    Receipt.reconcile_changes
-
-    message.reload
-
-    expect(message.sent_message_count).to eq(2)
-    expect(message.running_sent_message_count).to eq(2)
-
-    expect(message.opened_message_count).to eq(1)
-    expect(message.running_opened_message_count).to eq(1)
   end
 end
