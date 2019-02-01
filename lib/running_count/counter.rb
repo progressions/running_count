@@ -6,12 +6,11 @@ module RunningCount
     class << self
 
       def enqueue_changes(record, counter_data)
-        counter_data.each do |counter_column, data|
-          if data[:aggregated_field]
-            Counter.enqueue_sum(record, data)
-          else
-            Counter.enqueue_count(record, data)
-          end
+        counter_data
+          .partition { |_counter_column, data| data[:aggregated_field].present? }
+          .tap do |sums, counts|
+            sums.each { |_counter_column, data| Counter.enqueue_sum(record, data) }
+            counts.each { |_counter_column, data| Counter.enqueue_count(record, data) }
         end
       end
 
