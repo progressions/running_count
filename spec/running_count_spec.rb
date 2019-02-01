@@ -75,8 +75,8 @@ describe RunningCount do
     expect(course.published_article_count).to eq(0)
     expect(course.running_published_article_count).to eq(0)
 
-    Article.create(course_id: course.id, published: false)
-    Article.create(course_id: course.id, published: true)
+    article1 = Article.create(course_id: course.id, published: false)
+    article2 = Article.create(course_id: course.id, published: true)
 
     expect(course.published_article_count).to eq(0)
     expect(course.running_published_article_count).to eq(1)
@@ -87,6 +87,18 @@ describe RunningCount do
 
     expect(course.published_article_count).to eq(1)
     expect(course.running_published_article_count).to eq(1)
+
+    article1.update_attributes!(published: true)
+
+    expect(course.published_article_count).to eq(1)
+    expect(course.running_published_article_count).to eq(2)
+
+    Article.reconcile_changes
+
+    course.reload
+
+    expect(course.published_article_count).to eq(2)
+    expect(course.running_published_article_count).to eq(2)
   end
 
   it "counts receipts to multiple columns" do
@@ -100,8 +112,8 @@ describe RunningCount do
     expect(message.opened_message_count).to eq(0)
     expect(message.running_opened_message_count).to eq(0)
 
-    Receipt.create(message_id: message.id, sent_at: Time.now)
-    Receipt.create(message_id: message.id, sent_at: Time.now, opened_at: Time.now)
+    receipt1 = Receipt.create(message_id: message.id, sent_at: Time.now)
+    receipt2 = Receipt.create(message_id: message.id, sent_at: Time.now, opened_at: Time.now)
 
     expect(message.sent_message_count).to eq(0)
     expect(message.running_sent_message_count).to eq(2)
@@ -118,5 +130,23 @@ describe RunningCount do
 
     expect(message.opened_message_count).to eq(1)
     expect(message.running_opened_message_count).to eq(1)
+
+    receipt1.update_attributes!(opened_at: Time.now)
+
+    expect(message.sent_message_count).to eq(2)
+    expect(message.running_sent_message_count).to eq(2)
+
+    expect(message.opened_message_count).to eq(1)
+    expect(message.running_opened_message_count).to eq(2)
+
+    Receipt.reconcile_changes
+
+    message.reload
+
+    expect(message.sent_message_count).to eq(2)
+    expect(message.running_sent_message_count).to eq(2)
+
+    expect(message.opened_message_count).to eq(2)
+    expect(message.running_opened_message_count).to eq(2)
   end
 end

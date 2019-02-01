@@ -7,10 +7,11 @@ module RunningCount
 
       def enqueue_changes(record, counter_data)
         counter_data
-          .partition { |_counter_column, data| data[:aggregated_field].present? }
+          .values
+          .partition { |data| data[:aggregated_field].present? }
           .tap do |sums, counts|
-            sums.each { |_counter_column, data| Counter.enqueue_sum(record, data) }
-            counts.each { |_counter_column, data| Counter.enqueue_count(record, data) }
+            sums.each { |data| Counter.enqueue_sum(record, data) }
+            counts.each { |data| Counter.enqueue_count(record, data) }
         end
       end
 
