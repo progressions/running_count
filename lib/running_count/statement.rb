@@ -31,8 +31,6 @@ module RunningCount
 
         destination_id = Format.parse(item)
         ActiveRecord::Base.connection.exec_query("EXECUTE #{counter_data[:statement]}(#{destination_id})")
-      rescue StandardError => e
-        pp counter_data
       end
 
       private
