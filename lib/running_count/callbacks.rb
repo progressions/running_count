@@ -15,8 +15,7 @@ module RunningCount
         data = Counter.counter_data(self.name, self.table_name, relation, opts)
         counter_column = data[:counter_column]
 
-        @counter_data ||= {}
-        @counter_data[counter_column] = data
+        _counter_data[counter_column] = data
 
         Counter.add_callbacks(self, opts)
       end
@@ -28,7 +27,7 @@ module RunningCount
       end
 
       def _counter_data
-        @counter_data
+        @counter_data ||= {}
       end
 
     end
