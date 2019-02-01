@@ -2,9 +2,9 @@ PATH
   remote: .
   specs:
     running_count (0.1.0)
-      activesupport
+      activesupport (~> 4.2.11)
       pg (= 0.20.0)
-      redis-rails
+      redis-rails (~> 5.0)
 
 GEM
   remote: https://rubygems.org/
@@ -74,8 +74,6 @@ GEM
     pry-byebug (3.6.0)
       byebug (~> 10.0)
       pry (~> 0.10)
-    pry-rails (0.3.9)
-      pry (>= 0.10.4)
     rack (1.6.11)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -150,9 +148,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  database_cleaner
-  pry-byebug
-  pry-rails
+  database_cleaner (~> 1.7.0)
+  pry-byebug (~> 3.6.0)
   rails (~> 4.0)
   rake (~> 10.0)
   rspec (~> 3.0)
