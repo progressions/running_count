@@ -89,13 +89,15 @@ describe "CounterCulture" do
     expect(course.running_published_article_count).to eq(1)
   end
 
-  it "counts receipts" do
+  it "counts receipts to multiple columns" do
     Receipt.reconcile_changes
 
     message = Message.create
 
     expect(message.sent_message_count).to eq(0)
     expect(message.running_sent_message_count).to eq(0)
+
+    expect(message.opened_message_count).to eq(0)
     expect(message.running_opened_message_count).to eq(0)
 
     Receipt.create(message_id: message.id, sent_at: Time.now)
@@ -103,7 +105,9 @@ describe "CounterCulture" do
 
     expect(message.sent_message_count).to eq(0)
     expect(message.running_sent_message_count).to eq(2)
-    expect(message.running_opened_message_count).to eq(0)
+
+    expect(message.opened_message_count).to eq(0)
+    expect(message.running_opened_message_count).to eq(1)
 
     Receipt.reconcile_changes
 
@@ -111,6 +115,8 @@ describe "CounterCulture" do
 
     expect(message.sent_message_count).to eq(2)
     expect(message.running_sent_message_count).to eq(2)
-    expect(message.running_opened_message_count).to eq(0)
+
+    expect(message.opened_message_count).to eq(1)
+    expect(message.running_opened_message_count).to eq(1)
   end
 end

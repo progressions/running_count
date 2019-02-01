@@ -18,6 +18,10 @@ module RunningCount
       end
 
       def enqueue_change(record, counter_data)
+        if changed_field = counter_data[:changed_field]
+          return true unless record.previous_changes.has_key?(changed_field) && counter_data[:if].call(record)
+        end
+
         destination = record.send(counter_data[:relation])
         item = Format.item(destination)
 
@@ -71,17 +75,14 @@ module RunningCount
           statement: statement,
           release_sql: Statement.release_sql(statement),
           aggregated_field: opts[:aggregated_field],
+          changed_field: opts[:changed_field],
           statement_sql: sql,
           if: opts[:if],
         }
       end
 
       def add_callbacks(klass, opts)
-        if opts[:aggregated_field]
-          klass.after_commit :enqueue_sum, on: [:create, :update], if: opts[:if]
-        else
-          klass.after_commit :enqueue_count, on: [:create, :update], if: opts[:if]
-        end
+        klass.after_commit :enqueue_changes, on: [:create, :update], if: opts[:if]
       end
 
       private
