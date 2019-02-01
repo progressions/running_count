@@ -10,7 +10,7 @@ require 'models/receipt'
 require 'database_cleaner'
 DatabaseCleaner.strategy = :deletion
 
-describe "CounterCulture" do
+describe RunningCount do
   let(:user) { User.create }
 
   before(:each) do
