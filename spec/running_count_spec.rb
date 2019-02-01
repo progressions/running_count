@@ -4,11 +4,13 @@ require 'models/user'
 require 'models/course'
 require 'models/purchase'
 require 'models/article'
+require 'models/message'
+require 'models/receipt'
 
 require 'database_cleaner'
 DatabaseCleaner.strategy = :deletion
 
-describe "CounterCulture" do
+describe RunningCount do
   let(:user) { User.create }
 
   before(:each) do
@@ -40,6 +42,31 @@ describe "CounterCulture" do
 
     expect(user.courses_count).to eq(count)
     expect(user.running_courses_count).to eq(count)
+  end
+
+  it "updates counter when a record is deleted" do
+    Course.reconcile_changes
+
+    user = User.create
+    course = Course.create(user_id: user.id)
+
+    Course.reconcile_changes
+
+    user.reload
+
+    expect(user.courses_count).to eq(1)
+    expect(user.running_courses_count).to eq(1)
+
+    course.destroy
+    user.reload
+
+    expect(user.courses_count).to eq(1)
+    expect(user.running_courses_count).to eq(0)
+
+    Course.reconcile_changes
+
+    expect(user.courses_count).to eq(0)
+    expect(user.running_courses_count).to eq(0)
   end
 
   it "aggregates field" do
@@ -87,4 +114,34 @@ describe "CounterCulture" do
     expect(course.running_published_article_count).to eq(1)
   end
 
+  it "counts receipts to multiple columns" do
+    Receipt.reconcile_changes
+
+    message = Message.create
+
+    expect(message.sent_message_count).to eq(0)
+    expect(message.running_sent_message_count).to eq(0)
+
+    expect(message.opened_message_count).to eq(0)
+    expect(message.running_opened_message_count).to eq(0)
+
+    Receipt.create(message_id: message.id, sent_at: Time.now)
+    Receipt.create(message_id: message.id, sent_at: Time.now, opened_at: Time.now)
+
+    expect(message.sent_message_count).to eq(0)
+    expect(message.running_sent_message_count).to eq(2)
+
+    expect(message.opened_message_count).to eq(0)
+    expect(message.running_opened_message_count).to eq(1)
+
+    Receipt.reconcile_changes
+
+    message.reload
+
+    expect(message.sent_message_count).to eq(2)
+    expect(message.running_sent_message_count).to eq(2)
+
+    expect(message.opened_message_count).to eq(1)
+    expect(message.running_opened_message_count).to eq(1)
+  end
 end
