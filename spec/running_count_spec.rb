@@ -34,7 +34,6 @@ describe RunningCount do
     expect(user.running_courses_count).to eq(count)
 
     bm = Benchmark.measure { Course.reconcile_changes }
-    puts bm.inspect
 
     user.reload
 

@@ -27,12 +27,7 @@ module RunningCount
       def enqueue_deletion(record, counter_data)
         destination = record.send(counter_data[:relation])
         item = Format.item(destination)
-
-        amount = if counter_data[:aggregated_field]
-                   record.send(counter_data[:aggregated_field])
-                 else
-                   counter_data.fetch(:amount, 1)
-                 end
+        amount = amount_from_deleted_record(record, counter_data)
 
         Storage.add_item(item, counter_data[:running_set_name], 0 - amount)
       end
@@ -99,6 +94,14 @@ module RunningCount
       end
 
       private
+
+      def amount_from_deleted_record(record, counter_data)
+        if counter_data[:aggregated_field]
+          record.send(counter_data[:aggregated_field])
+        else
+          counter_data.fetch(:amount, 1)
+        end
+      end
 
       def destination_class_name(relation, opts)
         opts[:class_name] ? opts[:class_name].to_s.constantize : relation.to_s.camelcase.constantize
