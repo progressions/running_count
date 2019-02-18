@@ -5,12 +5,8 @@ module RunningCount
 
     extend ActiveSupport::Concern
 
-    def enqueue_count
-      Counter.enqueue_change(self, self.class._counter_data)
-    end
-
-    def enqueue_sum
-      Counter.enqueue_sum(self, self.class._counter_data)
+    def enqueue_changes
+      Counter.enqueue_changes(self, self.class._counter_data)
     end
 
     def enqueue_deletion
@@ -20,17 +16,22 @@ module RunningCount
     module ClassMethods
 
       def keep_running_count(relation, opts = {})
-        Counter.add_callbacks(self, opts)
+        data = Counter.counter_data(self.name, self.table_name, relation, opts)
+        counter_column = data[:counter_column]
 
-        @counter_data = Counter.counter_data(self.name, self.table_name, relation, opts)
+        _counter_data[counter_column] = data
+
+        Counter.add_callbacks(self, opts)
       end
 
       def reconcile_changes
-        Counter.reconcile_changes(self._counter_data)
+        self._counter_data.values.each do |data|
+          Counter.reconcile_changes(data)
+        end
       end
 
       def _counter_data
-        @counter_data
+        @counter_data ||= {}
       end
 
     end

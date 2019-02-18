@@ -5,6 +5,16 @@ module RunningCount
 
     class << self
 
+      def enqueue_changes(record, counter_data)
+        counter_data
+          .values
+          .partition { |data| data[:aggregated_field].present? }
+          .tap do |sums, counts|
+            sums.each { |data| Counter.enqueue_sum(record, data) }
+            counts.each { |data| Counter.enqueue_count(record, data) }
+        end
+      end
+
       def enqueue_sum(record, counter_data)
         aggregated_field = counter_data[:aggregated_field]
 
@@ -13,11 +23,15 @@ module RunningCount
         diff = record.previous_changes[aggregated_field].last.to_i - record.previous_changes[aggregated_field].first.to_i
 
         if diff != 0
-          Counter.enqueue_change(record, counter_data.merge(amount: diff))
+          Counter.enqueue_count(record, counter_data.merge(amount: diff))
         end
       end
 
-      def enqueue_change(record, counter_data)
+      def enqueue_count(record, counter_data)
+        if changed_field = counter_data[:changed_field]
+          return true unless record.previous_changes.has_key?(changed_field) && counter_data[:if].call(record)
+        end
+
         destination = record.send(counter_data[:relation])
         item = Format.item(destination)
 
@@ -25,11 +39,19 @@ module RunningCount
       end
 
       def enqueue_deletion(record, counter_data)
-        destination = record.send(counter_data[:relation])
-        item = Format.item(destination)
-        amount = amount_from_deleted_record(record, counter_data)
+        counter_data
+          .values
+          .each do |data|
+            Counter.enqueue_single_delete(record, data)
+          end
+      end
 
-        Storage.add_item(item, counter_data[:running_set_name], 0 - amount)
+      def enqueue_single_delete(record, data)
+        destination = record.send(data[:relation])
+        item = Format.item(destination)
+        amount = amount_from_deleted_record(record, data)
+
+        Storage.add_item(item, data[:running_set_name], 0 - amount)
       end
 
       def reconcile_changes(counter_data)
@@ -79,17 +101,14 @@ module RunningCount
           statement: statement,
           release_sql: Statement.release_sql(statement),
           aggregated_field: opts[:aggregated_field],
+          changed_field: opts[:changed_field],
           statement_sql: sql,
           if: opts[:if],
         }
       end
 
       def add_callbacks(klass, opts)
-        if opts[:aggregated_field]
-          klass.after_commit :enqueue_sum, on: [:create, :update], if: opts[:if]
-        else
-          klass.after_commit :enqueue_count, on: [:create, :update], if: opts[:if]
-        end
+        klass.after_commit :enqueue_changes, on: [:create, :update], if: opts[:if]
         klass.after_commit :enqueue_deletion, on: [:destroy], if: opts[:if]
       end
 
