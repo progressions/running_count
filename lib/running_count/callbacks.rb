@@ -9,6 +9,10 @@ module RunningCount
       Counter.enqueue_changes(self, self.class._counter_data)
     end
 
+    def enqueue_deletion
+      Counter.enqueue_deletion(self, self.class._counter_data)
+    end
+
     module ClassMethods
 
       def keep_running_count(relation, opts = {})

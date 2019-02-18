@@ -40,6 +40,60 @@ describe RunningCount do
     expect(user.running_courses_count).to eq(count)
   end
 
+  it "updates counter when a record is deleted" do
+    Course.reconcile_changes
+
+    user = User.create
+    course = Course.create(user_id: user.id)
+
+    Course.reconcile_changes
+
+    user.reload
+
+    expect(user.courses_count).to eq(1)
+    expect(user.running_courses_count).to eq(1)
+
+    course.destroy
+    user.reload
+
+    expect(user.courses_count).to eq(1)
+    expect(user.running_courses_count).to eq(0)
+
+    Course.reconcile_changes
+
+    user.reload
+
+    expect(user.courses_count).to eq(0)
+    expect(user.running_courses_count).to eq(0)
+  end
+
+  it "updates aggregated field on deletion" do
+    Purchase.reconcile_changes
+
+    user = User.create
+    purchase = Purchase.create(user_id: user.id, net_charge_usd: 100)
+
+    Purchase.reconcile_changes
+
+    user.reload
+
+    expect(user.transactions_gross).to eq(100)
+    expect(user.running_transactions_gross).to eq(100)
+
+    purchase.destroy
+    user.reload
+
+    expect(user.transactions_gross).to eq(100)
+    expect(user.running_transactions_gross).to eq(0)
+
+    Purchase.reconcile_changes
+
+    user.reload
+
+    expect(user.transactions_gross).to eq(0)
+    expect(user.running_transactions_gross).to eq(0)
+  end
+
   it "aggregates field" do
     Purchase.reconcile_changes
 

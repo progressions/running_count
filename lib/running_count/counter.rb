@@ -38,6 +38,22 @@ module RunningCount
         Storage.add_item(item, counter_data[:running_set_name], counter_data.fetch(:amount, 1))
       end
 
+      def enqueue_deletion(record, counter_data)
+        counter_data
+          .values
+          .each do |data|
+            Counter.enqueue_single_delete(record, data)
+          end
+      end
+
+      def enqueue_single_delete(record, data)
+        destination = record.send(data[:relation])
+        item = Format.item(destination)
+        amount = amount_from_deleted_record(record, data)
+
+        Storage.add_item(item, data[:running_set_name], 0 - amount)
+      end
+
       def reconcile_changes(counter_data)
         Statement.prepare_statement(counter_data)
 
@@ -93,9 +109,18 @@ module RunningCount
 
       def add_callbacks(klass, opts)
         klass.after_commit :enqueue_changes, on: [:create, :update], if: opts[:if]
+        klass.after_commit :enqueue_deletion, on: [:destroy], if: opts[:if]
       end
 
       private
+
+      def amount_from_deleted_record(record, counter_data)
+        if counter_data[:aggregated_field]
+          record.send(counter_data[:aggregated_field])
+        else
+          counter_data.fetch(:amount, 1)
+        end
+      end
 
       def destination_class_name(relation, opts)
         opts[:class_name] ? opts[:class_name].to_s.constantize : relation.to_s.camelcase.constantize
