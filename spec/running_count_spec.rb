@@ -25,16 +25,12 @@ describe "CounterCulture" do
 
     count = 10
 
-    count.times do
-      Course.create(user_id: user.id)
-      print "."
-    end
+    count.times { Course.create(user_id: user.id) }
 
     expect(user.courses_count).to eq(0)
     expect(user.running_courses_count).to eq(count)
 
-    bm = Benchmark.measure { Course.reconcile_changes }
-    puts bm.inspect
+    Course.reconcile_changes
 
     user.reload
 
