@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    running_count (0.2.0)
-      activesupport (~> 4.2.11)
+    running_count (0.2.1)
+      activesupport (>= 4.2.11)
       pg (= 0.20.0)
       redis-rails (~> 5.0)
 
@@ -150,7 +150,7 @@ PLATFORMS
 DEPENDENCIES
   database_cleaner (~> 1.7.0)
   pry-byebug (~> 3.6.0)
-  rails (~> 4.0)
+  rails (>= 4.0)
   rake (~> 10.0)
   rspec (~> 3.0)
   running_count!
