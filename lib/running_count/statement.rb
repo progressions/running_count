@@ -19,11 +19,11 @@ module RunningCount
       end
 
       def prepare_statement(counter_data)
-        ActiveRecord::Base.connection.exec_query(counter_data[:statement_sql])
-      end
-
-      def release_statement(counter_data)
-        ActiveRecord::Base.connection.exec_query(counter_data[:release_sql])
+        begin
+          ActiveRecord::Base.connection.exec_query(counter_data[:statement_sql])
+        rescue ActiveRecord::StatementInvalid
+          Rails.logger.warn "Statement already exists: #{counter_data[:statement_sql]}"
+        end
       end
 
       def reconcile_item(item, counter_data)

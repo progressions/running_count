@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    running_count (0.2.1)
+    running_count (0.2.2)
       activesupport (>= 4.2.11)
       pg (= 0.20.0)
       redis-rails (~> 5.0)
