@@ -7,7 +7,7 @@ Counter caches for Rails applications, including cached running counts.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'running_count', '~> 0.2`
+gem 'running_count', '~> 0.2.1`
 ```
 
 And then execute:
