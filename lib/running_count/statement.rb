@@ -14,11 +14,9 @@ module RunningCount
         )
       end
 
-      def release_sql(name)
-        %( DEALLOCATE #{name} )
-      end
-
       def prepare_statement(counter_data)
+        return if ActiveRecord::Base.connection.exec_query("select name from pg_prepared_statements where name = '#{counter_data[:statement]}'").present?
+
         ActiveRecord::Base.connection.exec_query(counter_data[:statement_sql])
       rescue ActiveRecord::StatementInvalid
         Rails.logger.warn "Statement already exists: #{counter_data[:statement]}"

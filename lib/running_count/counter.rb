@@ -60,8 +60,6 @@ module RunningCount
         Storage
           .scores(counter_data[:running_set_name])
           .each { |item, _score| Statement.reconcile_item(item, counter_data) }
-
-        Statement.release_statement(counter_data)
       end
 
       def running_count(destination, running_set_name)
@@ -97,7 +95,6 @@ module RunningCount
           destination: table_name,
           running_set_name: running_set_name,
           statement: statement,
-          release_sql: Statement.release_sql(statement),
           aggregated_field: opts[:aggregated_field],
           changed_field: opts[:changed_field],
           statement_sql: sql,
