@@ -60,6 +60,8 @@ module RunningCount
         Storage
           .scores(counter_data[:running_set_name])
           .each { |item, _score| Statement.reconcile_item(item, counter_data) }
+
+        Statement.release_statement(counter_data)
       end
 
       def running_count(destination, running_set_name)
