@@ -19,28 +19,38 @@ ActiveRecord::Schema.define(version: 20190201160159) do
   create_table "articles", force: :cascade do |t|
     t.integer "course_id"
     t.boolean "published"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "courses", force: :cascade do |t|
     t.string  "name"
     t.integer "user_id"
     t.integer "published_article_count", default: 0, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "messages", force: :cascade do |t|
     t.string  "body"
     t.integer "sent_message_count", default: 0, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "purchases", force: :cascade do |t|
     t.integer "user_id"
     t.integer "net_charge_usd"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "receipts", force: :cascade do |t|
     t.integer "message_id"
     t.string  "sent_at"
     t.string  "opened_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "users", force: :cascade do |t|
