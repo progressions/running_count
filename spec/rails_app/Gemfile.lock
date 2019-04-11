@@ -1,10 +1,10 @@
 PATH
   remote: ../..
   specs:
-    running_count (0.1.0)
-      activesupport (~> 4.2.11)
+    running_count (0.2.5)
+      activesupport
       pg (= 0.20.0)
-      redis-rails (~> 5.0)
+      redis-rails (>= 5.0)
 
 GEM
   remote: https://rubygems.org/

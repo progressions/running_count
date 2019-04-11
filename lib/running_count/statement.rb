@@ -87,9 +87,12 @@ module RunningCount
         #
         %(
           PREPARE #{statement} (int) AS
-          UPDATE "#{destination_table_name}" SET "#{set_name}" = (
+          UPDATE "#{destination_table_name}"
+          SET "#{set_name}" = (
             #{inner_sql}
-          ) WHERE "#{destination_table_name}"."id" = $1
+          ),
+          "updated_at" = now()
+          WHERE "#{destination_table_name}"."id" = $1
         )
       end
 
