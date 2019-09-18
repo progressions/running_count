@@ -52,6 +52,7 @@ module RunningCount
         amount = amount_from_deleted_record(record, data)
 
         Storage.add_item(item, data[:running_set_name], 0 - amount)
+      rescue StandardError => e
       end
 
       def reconcile_changes(counter_data)
