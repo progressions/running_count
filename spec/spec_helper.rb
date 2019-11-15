@@ -5,7 +5,6 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require "rails_app/config/environment"
 
-require 'pry'
 require 'rspec'
 require 'running_count'
 
