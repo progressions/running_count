@@ -1,15 +1,15 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'rails', '~> 4.2.11'
+gem "rails", "~> 5.1.0"
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'pg', "0.20.0"
+gem "pg", "0.20.0"
 
-gem 'redis-rails'
+gem "redis"
 
-gem 'running_count', path: '../..'
+gem "running_count", path: "../.."
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

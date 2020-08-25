@@ -11,10 +11,20 @@ require "running_count/format"
 require "running_count/storage"
 
 module RunningCount
+
   class Error < StandardError; end
+
+  class << self
+
+    attr_accessor :redis
+
+  end
+
 end
 
 # extend ActiveRecord with our own code here
 ActiveSupport.on_load(:active_record) do
   include RunningCount::Callbacks
+  RunningCount.redis ||= $redis # rubocop:disable Style/GlobalVars
+  RunningCount.redis ||= REDIS if defined?(REDIS)
 end
