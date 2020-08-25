@@ -156,7 +156,7 @@ describe RunningCount do
     expect(course.running_published_article_count).to eq(1)
     expect(course.updated_at).to be > original_updated_at
 
-    article1.update_attributes!(published: true)
+    article1.update!(published: true)
 
     expect(course.published_article_count).to eq(1)
     expect(course.running_published_article_count).to eq(2)
@@ -207,7 +207,7 @@ describe RunningCount do
 
     expect(message.updated_at).to be > original_updated_at
 
-    receipt1.update_attributes!(opened_at: Time.now)
+    receipt1.update!(opened_at: Time.now)
 
     expect(message.sent_message_count).to eq(2)
     expect(message.running_sent_message_count).to eq(2)
