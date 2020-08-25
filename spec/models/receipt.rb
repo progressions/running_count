@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 class Receipt < ActiveRecord::Base
+
   belongs_to :message
 
   keep_running_count(
@@ -15,4 +18,5 @@ class Receipt < ActiveRecord::Base
     sql: ["receipts.sent_at IS NOT NULL"],
     changed_field: :sent_at,
   )
+
 end

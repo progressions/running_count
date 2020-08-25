@@ -1,19 +1,22 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+# frozen_string_literal: true
 
-require 'models/user'
-require 'models/course'
-require 'models/purchase'
-require 'models/article'
-require 'models/message'
-require 'models/receipt'
+require File.expand_path("#{File.dirname(__FILE__)}/spec_helper")
 
-require 'database_cleaner'
+require "models/user"
+require "models/course"
+require "models/purchase"
+require "models/article"
+require "models/message"
+require "models/receipt"
+
+require "database_cleaner"
 DatabaseCleaner.strategy = :deletion
 
-describe RunningCount do
+RSpec.describe RunningCount do
+
   let(:user) { User.create }
 
-  before(:each) do
+  before do
     DatabaseCleaner.clean
   end
 
@@ -141,7 +144,7 @@ describe RunningCount do
     expect(course.running_published_article_count).to eq(0)
 
     article1 = Article.create(course_id: course.id, published: false)
-    article2 = Article.create(course_id: course.id, published: true)
+    _article2 = Article.create(course_id: course.id, published: true)
 
     expect(course.published_article_count).to eq(0)
     expect(course.running_published_article_count).to eq(1)
@@ -184,7 +187,7 @@ describe RunningCount do
     expect(message.running_opened_message_count).to eq(0)
 
     receipt1 = Receipt.create(message_id: message.id, sent_at: Time.now)
-    receipt2 = Receipt.create(message_id: message.id, sent_at: Time.now, opened_at: Time.now)
+    _receipt2 = Receipt.create(message_id: message.id, sent_at: Time.now, opened_at: Time.now)
 
     expect(message.sent_message_count).to eq(0)
     expect(message.running_sent_message_count).to eq(2)
@@ -229,4 +232,5 @@ describe RunningCount do
 
     expect(message.updated_at).to be > checkpoint_1_updated_at
   end
+
 end
