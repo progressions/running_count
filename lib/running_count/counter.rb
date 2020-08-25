@@ -12,7 +12,7 @@ module RunningCount
           .tap do |sums, counts|
             sums.each { |data| Counter.enqueue_sum(record, data) }
             counts.each { |data| Counter.enqueue_count(record, data) }
-        end
+          end
       end
 
       def enqueue_sum(record, counter_data)
@@ -28,7 +28,7 @@ module RunningCount
       end
 
       def enqueue_count(record, counter_data)
-        if changed_field = counter_data[:changed_field]
+        if (changed_field = counter_data[:changed_field])
           return true unless record.previous_changes.has_key?(changed_field) && counter_data[:if].call(record)
         end
 
@@ -39,11 +39,9 @@ module RunningCount
       end
 
       def enqueue_deletion(record, counter_data)
-        counter_data
-          .values
-          .each do |data|
-            Counter.enqueue_single_delete(record, data)
-          end
+        counter_data.each_value do |data|
+          Counter.enqueue_single_delete(record, data)
+        end
       end
 
       def enqueue_single_delete(record, data)
@@ -52,7 +50,7 @@ module RunningCount
         amount = amount_from_deleted_record(record, data)
 
         Storage.add_item(item, data[:running_set_name], 0 - amount)
-      rescue StandardError => e
+      rescue StandardError => exception
       end
 
       def reconcile_changes(counter_data)

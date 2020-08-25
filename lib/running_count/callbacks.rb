@@ -25,7 +25,7 @@ module RunningCount
       end
 
       def reconcile_changes
-        self._counter_data.values.each do |data|
+        self._counter_data.each_value do |data|
           Counter.reconcile_changes(data)
         end
       end
