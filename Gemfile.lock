@@ -154,10 +154,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  database_cleaner (>= 1.7.0)
+  database_cleaner
   rails
-  rake (>= 10.0)
-  rspec (>= 3.0)
+  rake
+  rspec
   running_count!
 
 BUNDLED WITH
