@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'active_support/concern'
-require 'active_support/lazy_load_hooks'
-require 'redis'
+require "active_support/concern"
+require "active_support/lazy_load_hooks"
+require "redis"
 
 require "running_count/callbacks"
 require "running_count/counter"
